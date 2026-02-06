@@ -1,0 +1,6 @@
+{
+    "dart.flutterSdkPath": "/home/gabrielguerra/flutter",
+    "dart.sdkPath": "/home/gabrielguerra/flutter/bin/cache/dart-sdk",
+    "files.autoSave": "afterDelay",
+    "dart.flutterHotReloadOnSave": "all",
+}
