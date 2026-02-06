@@ -82,6 +82,6 @@ flutter build ios        # iOS
 flutter build web        # Web
 ```
 
-## 📄 Licença
+## Atualizações
 
-Este é um projeto de demonstração desenvolvido para fins educacionais e de aprendizado do framework Flutter.
+Projeto ainda em desenvolvimento e com fins educacionais. Futuras features ainda vão ser lançadas.
