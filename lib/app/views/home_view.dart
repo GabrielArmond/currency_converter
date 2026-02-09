@@ -1,5 +1,5 @@
-import 'package:currency_converter/app/components/currency_box.dart';
-import 'package:currency_converter/app/controllers/home_controller.dart';
+import 'package:money_converter/app/components/currency_box.dart';
+import 'package:money_converter/app/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
@@ -31,7 +31,7 @@ class _HomeViewState extends State<HomeView> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Padding(
-          padding: EdgeInsets.only(left: 30, right: 30, top: 100, bottom: 20),
+          padding: EdgeInsets.only(left: 30, right: 30, top: 50, bottom: 20),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -41,32 +41,71 @@ class _HomeViewState extends State<HomeView> {
                   height: 250,
                 ),
                 SizedBox(height: 30),
-                CurrencyBox(
-                  selectedItem: homeController.toCurrency,
-                  items: homeController.currencies,
-                  controller: toTextController,
-                  onChanged: (model) {
-                    setState(() {
-                      homeController.toCurrency = model;
-                    });
-                  },
+                Text(
+                  'DE:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 8),
                 CurrencyBox(
                   selectedItem: homeController.fromCurrency,
                   items: homeController.currencies,
-                  controller: fromTextController,
+                  controller: toTextController,
                   onChanged: (model) {
                     setState(() {
                       homeController.fromCurrency = model;
                     });
                   },
                 ),
-                SizedBox(height: 50),
-                ElevatedButton(
+
+                SizedBox(height: 20),
+
+                IconButton(
                   onPressed: () {
-                    homeController.convert();
+                    setState(() {
+                      homeController.swapCurrencies();
+                    });
                   },
+                  icon: Icon(Icons.swap_vert, size: 32, color: Colors.blue),
+                ),
+
+                SizedBox(height: 20),
+
+                Text(
+                  'PARA:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: 8),
+                CurrencyBox(
+                  selectedItem: homeController.toCurrency,
+                  items: homeController.currencies,
+                  controller: fromTextController,
+                  isReadOnly: true,
+                  onChanged: (model) {
+                    setState(() {
+                      homeController.toCurrency = model;
+                    });
+                  },
+                ),
+
+                SizedBox(height: 30),
+
+                if (homeController.errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      homeController.errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+                ElevatedButton(
+                  onPressed: homeController.isLoading
+                      ? null
+                      : () async {
+                          await homeController.convert();
+                          setState(() {}); // Atualiza a tela
+                        },
                   style: ButtonStyle(
                     mouseCursor: WidgetStateProperty.all(
                       SystemMouseCursors.click,
@@ -75,7 +114,16 @@ class _HomeViewState extends State<HomeView> {
                       EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                     ),
                   ),
-                  child: Text('CONVERTER'),
+                  child: homeController.isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text('CONVERTER'),
                 ),
               ],
             ),

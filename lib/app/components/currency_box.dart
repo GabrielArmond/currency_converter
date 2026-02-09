@@ -1,4 +1,4 @@
-import 'package:currency_converter/app/models/currency_model.dart';
+import 'package:money_converter/app/models/currency_model.dart';
 import 'package:flutter/material.dart';
 
 class CurrencyBox extends StatelessWidget {
@@ -6,6 +6,7 @@ class CurrencyBox extends StatelessWidget {
   final TextEditingController controller;
   final CurrencyModel selectedItem;
   final void Function(CurrencyModel model) onChanged;
+  final bool isReadOnly;
 
   const CurrencyBox({
     super.key,
@@ -13,22 +14,8 @@ class CurrencyBox extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     required this.selectedItem,
+    this.isReadOnly = false,
   });
-
-  static String prefixText(String name) {
-    switch (name) {
-      case 'Real':
-        return 'R\$ ';
-      case 'Dólar':
-        return '\$ ';
-      case 'Euro':
-        return '€ ';
-      case 'Bitcoin':
-        return 'BTC ';
-      default:
-        return '';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +32,10 @@ class CurrencyBox extends StatelessWidget {
               value: selectedItem,
               items: items
                   .map(
-                    (item) =>
-                        DropdownMenuItem(value: item, child: Text(item.name)),
+                    (item) => DropdownMenuItem(
+                      value: item,
+                      child: Text('${item.name} (${item.code})'),
+                    ),
                   )
                   .toList(),
               onChanged: (value) {
@@ -57,18 +46,29 @@ class CurrencyBox extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(width: 20),
+        SizedBox(width: 10),
         Expanded(
-          flex: 2,
-          child: TextField(
-            controller: controller,
-            scrollPadding: EdgeInsets.all(10),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            height: 56,
+            child: TextField(
+              controller: controller,
+              readOnly: isReadOnly,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
-              labelText: 'Valor',
-              prefixText: prefixText(selectedItem.name),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 12,
+                ),
+                prefixText: '${selectedItem.symbol} ',
+                prefixStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: const UnderlineInputBorder(),
+                hintText: '0.00',
+              ),
             ),
           ),
         ),

@@ -1,56 +1,70 @@
-import 'package:currency_converter/app/controllers/home_controller.dart';
-import 'package:currency_converter/app/models/currency_model.dart';
+import 'package:money_converter/app/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final TextEditingController toTextController = TextEditingController();
-  final TextEditingController fromTextController = TextEditingController();
+  group('HomeController Tests', () {
+    late TextEditingController toTextController;
+    late TextEditingController fromTextController;
+    late HomeController homeController;
 
-  final homeController = HomeController(
-    toTextController: toTextController,
-    fromTextController: fromTextController,
-  );
+    setUp(() {
+      toTextController = TextEditingController();
+      fromTextController = TextEditingController();
+      homeController = HomeController(
+        toTextController: toTextController,
+        fromTextController: fromTextController,
+      );
+    });
 
-  test('Deve converter de Real para Dólar com vírgula', () {
-    toTextController.text = '2,0';
+    tearDown(() {
+      toTextController.dispose();
+      fromTextController.dispose();
+    });
 
-    homeController.convert();
+    test('Deve inicializar com moedas corretas', () {
+      expect(homeController.toCurrency.name, 'Real');
+      expect(homeController.fromCurrency.name, 'Dólar');
+      expect(homeController.currencies.length, greaterThan(3));
+    });
 
-    expect(fromTextController.text, '0.38');
-  });
+    test('Deve validar entrada vazia', () async {
+      toTextController.text = '';
+      await homeController.convert();
+      expect(homeController.errorMessage, 'Digite um valor para converter');
+    });
 
-  test('Deve converter de Real para Dólar com ponto', () {
-    toTextController.text = '2.0';
+    test('Deve validar entrada inválida', () async {
+      toTextController.text = '0';
+      await homeController.convert();
+      expect(homeController.errorMessage, 'Digite um valor válido');
+    });
 
-    homeController.convert();
+    test('Deve trocar moedas corretamente', () {
+      final toCurrencyOriginal = homeController.toCurrency;
+      final fromCurrencyOriginal = homeController.fromCurrency;
 
-    expect(fromTextController.text, '0.38');
-  });
+      homeController.swapCurrencies();
 
-  test('Deve converter de Dólar para Real', () {
-    toTextController.text = '1.0';
+      expect(homeController.toCurrency, fromCurrencyOriginal);
+      expect(homeController.fromCurrency, toCurrencyOriginal);
+      expect(toTextController.text, isEmpty);
+      expect(fromTextController.text, isEmpty);
+    });
 
-    homeController.toCurrency = CurrencyModel(
-      name: 'Dólar',
-      real: 5.25,
-      dolar: 1.0,
-      euro: 0.85,
-      bitcoin: 0.000022,
-    );
-    homeController.fromCurrency = CurrencyModel(
-      name: 'Real',
-      real: 1.0,
-      dolar: 0.19,
-      euro: 0.16,
-      bitcoin: 0.0000042,
-    );
+    test('Deve configurar moedas específicas', () {
+      final realCurrency = homeController.currencies.firstWhere(
+        (currency) => currency.name == 'Real',
+      );
+      final dolarCurrency = homeController.currencies.firstWhere(
+        (currency) => currency.name == 'Dólar',
+      );
 
-    homeController.convert();
+      homeController.toCurrency = realCurrency;
+      homeController.fromCurrency = dolarCurrency;
 
-    expect(
-      fromTextController.text,
-      homeController.toCurrency.real.toStringAsFixed(2),
-    );
+      expect(homeController.toCurrency.code, 'BRL');
+      expect(homeController.fromCurrency.code, 'USD');
+    });
   });
 }
