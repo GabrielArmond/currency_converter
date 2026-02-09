@@ -68,4 +68,10 @@ class HomeController {
     toTextController.clear();
     fromTextController.clear();
   }
+
+  void cleanInputs() {
+    toTextController.clear();
+    fromTextController.clear();
+    errorMessage = null;
+  }
 }

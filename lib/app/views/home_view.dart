@@ -59,13 +59,34 @@ class _HomeViewState extends State<HomeView> {
 
                 SizedBox(height: 20),
 
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      homeController.swapCurrencies();
-                    });
-                  },
-                  icon: Icon(Icons.swap_vert, size: 32, color: Colors.blue),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          homeController.swapCurrencies();
+                        });
+                      },
+                      icon: Icon(Icons.swap_vert, size: 32, color: Colors.blue),
+                      mouseCursor: SystemMouseCursors.click,
+                      tooltip: 'Inverter moedas',
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          homeController.cleanInputs();
+                        });
+                      },
+                      icon: Icon(
+                        Icons.clear_rounded,
+                        size: 32,
+                        color: Colors.blue,
+                      ),
+                      mouseCursor: SystemMouseCursors.click,
+                      tooltip: 'Limpar campos',
+                    ),
+                  ],
                 ),
 
                 SizedBox(height: 20),
